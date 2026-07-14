@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="SetuTunnel — two devices, one private tunnel, zero trace. End-to-end encrypted, peer-to-peer file transfer. No accounts, no cloud, no files at rest on any server."
+    />
+    <meta name="color-scheme" content="light dark" />
+    <meta
+      name="theme-color"
+      media="(prefers-color-scheme: light)"
+      content="#ffffff"
+    />
+    <meta
+      name="theme-color"
+      media="(prefers-color-scheme: dark)"
+      content="#0a0a0b"
+    />
+    <title>SetuTunnel — private P2P file transfer</title>
+
+    <!-- Social preview (Open Graph + Twitter). Set og:url/og:image to absolute
+         URLs once deployed for richest previews; relative works on most scrapers. -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="SetuTunnel" />
+    <meta
+      property="og:title"
+      content="SetuTunnel — private P2P file transfer"
+    />
+    <meta
+      property="og:description"
+      content="Two devices. One private tunnel. Zero trace. End-to-end encrypted, peer-to-peer — no accounts, no cloud."
+    />
+    <meta property="og:image" content="/pwa-512.png" />
+    <meta name="twitter:card" content="summary" />
+    <meta
+      name="twitter:title"
+      content="SetuTunnel — private P2P file transfer"
+    />
+    <meta
+      name="twitter:description"
+      content="Two devices. One private tunnel. Zero trace. End-to-end encrypted, peer-to-peer."
+    />
+    <meta name="twitter:image" content="/pwa-512.png" />
+    <script>
+      // Set the theme before first paint to avoid a flash. Follows the OS by
+      // default; an explicit toggle is saved and wins over the system setting.
+      (() => {
+        try {
+          const saved = localStorage.getItem('setu-theme')
+          const dark = saved
+            ? saved === 'dark'
+            : window.matchMedia('(prefers-color-scheme: dark)').matches
+          document.documentElement.classList.toggle('dark', dark)
+        } catch {}
+      })()
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

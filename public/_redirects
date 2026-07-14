@@ -1,0 +1,5 @@
+# Cloudflare Pages SPA fallback. Pairing links are path routes
+# (/r/<roomId>#<secret>), so every deep link must serve the app shell
+# instead of 404ing. Copied verbatim into dist/ by Vite; ignored by the
+# dev/preview servers (which do their own history fallback).
+/*  /index.html  200

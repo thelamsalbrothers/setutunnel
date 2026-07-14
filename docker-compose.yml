@@ -1,0 +1,41 @@
+# Host SetuTunnel's signaling anywhere — no Cloudflare required.
+#
+#   docker compose up -d              # just the signaling relay
+#   docker compose --profile turn up  # + a self-hosted coturn TURN server
+#
+# The frontend is STATIC: build it once (`bun run build`) and serve dist/ on any
+# static host, with VITE_SIGNALING_URL pointing at this relay over wss:// (put
+# TLS in front — a reverse proxy like Caddy/nginx, or your platform's built-in).
+services:
+  signaling:
+    build:
+      context: .
+      dockerfile: signaling/Dockerfile
+    ports:
+      - "8787:8787"
+    environment:
+      PORT: "8787"
+      # Optional — enable the ephemeral TURN credential endpoint (GET /turn, §5).
+      # TURN_SECRET must match coturn's static-auth-secret below. See DEPLOY.md.
+      # TURN_URLS: "turn:your-domain:3478,turns:your-domain:5349"
+      # TURN_SECRET: "REPLACE_WITH_LONG_RANDOM_SECRET"
+      # TURN_TTL: "86400"
+      # Optional — restrict who may open a room / fetch TURN creds (CORS + WS).
+      # ALLOWED_ORIGINS: "https://your-app-domain"
+    restart: unless-stopped
+
+  # Optional self-hosted TURN (NAT relay) — the vendor-neutral alternative to a
+  # managed TURN provider. Only started with `--profile turn`.
+  #
+  # TURN needs the host network (it hands out your public IP + a UDP relay port
+  # range), so this uses network_mode: host — Linux hosts only. Before running:
+  #   1. edit infra/coturn/turnserver.conf (set realm, external-ip, and a strong
+  #      static-auth-secret), and open UDP 3478 + 49160-49200 on your firewall;
+  #   2. point the app at it via VITE_TURN_URLS (see DEPLOY.md → TURN).
+  coturn:
+    profiles: ["turn"]
+    image: coturn/coturn:latest
+    network_mode: host
+    volumes:
+      - ./infra/coturn/turnserver.conf:/etc/coturn/turnserver.conf:ro
+    restart: unless-stopped

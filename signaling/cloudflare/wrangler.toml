@@ -1,0 +1,28 @@
+# Cloudflare Workers config for the SetuTunnel primary signaling plane.
+# Deploy:  bun run signaling:cf:deploy   (runs `wrangler deploy` with this config)
+# Local:   bun run signaling:cf:dev       (runs `wrangler dev`)
+#
+# `main` is resolved relative to THIS file, so it points at the sibling worker.
+name = "setutunnel-signaling"
+main = "worker.ts"
+compatibility_date = "2025-01-01"
+
+# One coordinator Durable Object runs the shared RoomManager (see worker.ts).
+[[durable_objects.bindings]]
+name = "ROOMS"
+class_name = "SignalingRoom"
+
+# SQLite-backed DO ⇒ available on the Workers FREE plan; scales to zero.
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["SignalingRoom"]
+
+# Optional vars. `TURN_URLS`/`TURN_TTL` enable the ephemeral TURN credential
+# endpoint (GET /turn, §5); `ALLOWED_ORIGINS` locks signaling + /turn to your
+# app's origin(s). Leave [vars] out entirely to accept any origin (the default).
+# The TURN shared secret is NOT a var — set it as a secret so it never sits in
+# this file:  bunx wrangler secret put TURN_SECRET
+# [vars]
+# ALLOWED_ORIGINS = "https://setutunnel.pages.dev,https://your-domain.example"
+# TURN_URLS = "turn:turn.your-domain:3478,turns:turn.your-domain:5349"
+# TURN_TTL = "86400"
